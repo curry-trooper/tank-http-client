@@ -5,23 +5,25 @@ const path = require("path");
 const mineTypes = require("mime-types");
 
 class Builder {
+    _base_options = {baseUrl: ""}
     _method = "get"
     _url = ""
-    _params = {}
-    _searchParams = {}
+    _data = {}
     _options = {
         multipart: false,
         json: true,
         compressed: true,
         follow_max: 5,
         rejectUnauthorized: false,
-        headers: {}
+        headers: {},
+        parse: true
     }
     _headers = {}
 
-    constructor(method, url) {
+    constructor(method, url, options) {
         this._method = method
-        this._url = url
+        this._base_options = Object.assign(this._base_options, options)
+        this._url = new URL(this._url, this._base_options.baseUrl)
     }
 
     /**
@@ -29,11 +31,9 @@ class Builder {
      * @return {Builder}
      */
     searchParams(data) {
-        const targetUrl = new URL(this._url)
         Object.keys(data).forEach(key => {
-            targetUrl.searchParams.set(key, data[key])
+            this._url.searchParams.set(key, data[key])
         })
-        this._url = targetUrl.toString()
         return this
     }
 
@@ -42,8 +42,8 @@ class Builder {
      * @param data {{string:*}}
      * @return {Builder}
      */
-    params(data) {
-        this._params = Object.assign(...this._params, ...data)
+    data(data) {
+        this._data = Object.assign(this._data, data)
         return this
     }
 
@@ -59,13 +59,15 @@ class Builder {
 
     /**
      * payload
-     * @param data
+     * @param data {{}}
+     * @return {Builder}
      */
     payload(data) {
-        this._params.payload = {
+        this._data.payload = {
             value: JSON.stringify(data),
             content_type: 'application/json'
         }
+        return this
     }
 
     /**
@@ -78,7 +80,7 @@ class Builder {
             throw new Error("not found file by :" + filename)
         }
         this.setMultipart()
-        this._params = Object.assign(...this._params, ...{
+        this._data = Object.assign(...this._data, ...{
             filename: filename,
             content_type: mineTypes.lookup(filename)
         })
@@ -96,7 +98,7 @@ class Builder {
         }
         this.setMultipart()
 
-        this._params = Object.assign(...this._params, ...{
+        this._data = Object.assign(this._data, {
             buffer: fs.readFileSync(filename),
             filename: path.parse(filename).name,
             content_type: mineTypes.lookup(filename)
@@ -105,8 +107,8 @@ class Builder {
     }
 
     /**
-     *
-     * @param key {string|json}
+     * set header |headers
+     * @param key {string|{}}
      * @param value? {string}
      */
     header(key, value) {
@@ -121,36 +123,46 @@ class Builder {
         return this
     }
 
-    _isJSON(str) {
-        if (typeof str == 'string') {
-            try {
-                var obj = JSON.parse(str);
-                if (typeof obj == 'object' && obj) {
-                    return true;
-                } else {
-                    return false;
-                }
-
-            } catch (e) {
-                console.log('error：' + str + '!!!' + e);
-                return false;
-            }
+    _isJSON(obj) {
+        if (typeof obj == 'object' && obj) {
+            return true;
+        } else {
+            return false;
         }
-        console.log('It is not a string!')
     }
 
     /**
      *
-     * @return {Promise | Promise<unknown>}
+     * @return { Promise<T>}
      */
-    send() {
-        return needle(this._method, this._url, this._params, Object.assign(...{headers: this._headers}, ...this._options))
+    async send() {
+        try {
+            const res = await needle(this._method, this._url.toString(), this._data, Object.assign({headers: this._headers}, this._options));
+            return new Promise((resolve, reject) => {
+                resolve(res.body)
+            })
+        } catch (err) {
+            return new Promise((resolve, reject) => {
+                reject(err)
+            })
+        }
+
     }
 
 
     /**
      *
-     * @param agent {http.Agent}
+     * @example
+     * const { HttpsProxyAgent } = require('hpagent');
+     * setAgent(new HttpsProxyAgent({
+     *     keepAlive: true,
+     *     keepAliveMsecs: 1000,
+     *     maxSockets: 256,
+     *     maxFreeSockets: 256,
+     *     scheduling: 'lifo',
+     *     proxy: 'https://localhost:8080'
+     *   }))
+     * @param agent {Agent|*}
      */
     setAgent(agent) {
         this._options.agent = agent
@@ -280,11 +292,11 @@ class Builder {
 
     /**
      *
-     * @param options {json:{pfx:string,key:string,passphrase:string,cert:string,ca:[],ciphers:string,rejectUnauthorized:boolean,secureProtocol:string,family:string}}
+     * @param options {{pfx?:string,key?:string,passphrase?:string,cert?:string,ca?:[],ciphers?:string,rejectUnauthorized?:boolean,secureProtocol?:string,family?:string}}
      * @return {Builder}
      */
     setHttpsOptions(options = {}) {
-        Object.assign(...this._options, ...options)
+        Object.assign(this._options, options)
         return this
     }
 }
