@@ -1,12 +1,12 @@
-- English|[中文](README_zh.md)
+* English|[中文](README_zh.md)
 
 ## tank-http-client
 
--[x] tank-http-client.js a  needle.js based http client
--[x] Only supports node environment
--[x] Support chaining call
--[x] [unit test](./test/httpClient.test.js)
--[x] document
+* [x] tank-http-client.js a  needle.js based http client
+* [x] Only supports node environment
+* [x] Support chaining call
+* [x] [unit test](./test/httpClient.test.js)
+* [x] document
 
 ## install
 

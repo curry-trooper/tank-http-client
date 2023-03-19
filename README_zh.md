@@ -1,12 +1,12 @@
-- [English](README.md) | 中文
+* [English](README.md) | 中文
 
 ## tank-http-client
 
--[x] tank-http-client.js 是一个基于 needle.js的 http 客户端
--[x] 只支持node环境，浏览器不可运行
--[x] 支持链式调用
--[x] [单元测试](./test/httpClient.test.js)
--[x] 文档
+* [x] tank-http-client.js 是一个基于 needle.js的 http 客户端
+* [x] 只支持node环境，浏览器不可运行
+* [x] 支持链式调用
+* [x] [单元测试](./test/httpClient.test.js)
+* [x] 文档
 
 ## 安装
 
