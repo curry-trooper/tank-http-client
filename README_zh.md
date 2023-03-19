@@ -1,25 +1,25 @@
-- English|[中文](README_zh.md)
+- [English](README.md) | 中文
 
 ## tank-http-client
 
--[x] tank-http-client.js a  needle.js based http client
--[x] Only supports node environment
--[x] Support chaining call
--[x] [unit test](./test/httpClient.test.js)
--[x] document
+-[x] tank-http-client.js 是一个基于 needle.js的 http 客户端
+-[x] 只支持node环境，浏览器不可运行
+-[x] 支持链式调用
+-[x] [单元测试](./test/httpClient.test.js)
+-[x] 文档
 
-## install
+## 安装
 
 ```shell
 npm install tank-http-client.js
 ```
 
-## examples
+## 基本示例
 
 ```javascript
-//import
+//导入
 const thc = require("tank-http-client.js")
-//set base url 
+//设置基础URL地址 
 thc.setBaseUrl("http://localhost:3008")
 
 thc.get("/test")
@@ -30,17 +30,17 @@ thc.get("/test")
     }).catch(err => {
     console.error(err)
 });
-//output ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
+//输出 ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
 async () => {
     const res = await thc.get("/test")
         .query({id: 1})
         .send()
     console.log(res)
 }
-//output ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
+//输出 ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
 ```
 
-## more examples
+## 更多示例
 
 ### delete
 
@@ -72,7 +72,7 @@ thc.post("/test")
 })
 ```
 
-### file upload，file buffer upload
+### 文件上传
 
 ```javascript
 //upload

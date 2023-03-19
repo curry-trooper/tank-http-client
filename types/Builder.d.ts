@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export = Builder;
 declare class Builder {
     constructor(method: any, url: any, options: any);
@@ -5,7 +6,7 @@ declare class Builder {
         baseUrl: string;
     };
     _method: string;
-    _url: string;
+    _url: URL;
     _data: {};
     _options: {
         multipart: boolean;
@@ -18,10 +19,16 @@ declare class Builder {
     };
     _headers: {};
     /**
-     * @param data
+     * @param queryData {{}}
      * @return {Builder}
      */
-    searchParams(data: any): Builder;
+    searchParams(queryData: {}): Builder;
+    /**
+     *
+     * @param queryData {{}}
+     * @return {Builder}
+     */
+    query(queryData: {}): Builder;
     /**
      * set params
      * @param data {{string:*}}
@@ -43,17 +50,19 @@ declare class Builder {
      */
     payload(data: {}): Builder;
     /**
-     * upload file
-     * @param filename
+     * upload file/files
+     * @param key {string|{}}
+     * @param filename? {string}
      * @return {Builder}
      */
-    file(filename: any): Builder;
+    file(key: string | {}, filename?: string): Builder;
     /**
      * upload buffer file
-     * @param filename
+     * @param key {string|{}}
+     * @param filename? {string}
      * @return {Builder}
      */
-    bufferFile(filename: any): Builder;
+    bufferFile(key: string | {}, filename?: string): Builder;
     /**
      * set header |headers
      * @param key {string|{}}
@@ -63,9 +72,9 @@ declare class Builder {
     _isJSON(obj: any): boolean;
     /**
      *
-     * @return { Promise<T>}
+     * @return { Promise<*>}
      */
-    send(): Promise<T>;
+    send(): Promise<any>;
     /**
      *
      * @example
@@ -78,9 +87,9 @@ declare class Builder {
      *     scheduling: 'lifo',
      *     proxy: 'https://localhost:8080'
      *   }))
-     * @param agent {Agent|*}
+     * @param agent {*}
      */
-    setAgent(agent: Agent | any): Builder;
+    setAgent(agent: any): Builder;
     /**
      * @param timeout {number} ms
      */
@@ -106,10 +115,10 @@ declare class Builder {
     setProxy(proxy?: string): Builder;
     /**
      *
-     * @param type {string:'auto'|'basic'|'digest'}
+     * @param type {'auto'|'basic'|'digest'}
      * @return {Builder}
      */
-    setAuth(type?: string): Builder;
+    setAuth(type?: 'auto' | 'basic' | 'digest'): Builder;
     /**
      *   Content-Length len
      * @param len
@@ -160,3 +169,4 @@ declare class Builder {
         family?: string;
     }): Builder;
 }
+import { URL } from "url";

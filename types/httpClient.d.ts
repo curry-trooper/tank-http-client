@@ -43,7 +43,7 @@ declare class HttpClient {
      * @param url
      * @return {Builder}
      */
-    fetch(url: any): Builder;
+    patch(url: any): Builder;
     /**
      *
      * @param url

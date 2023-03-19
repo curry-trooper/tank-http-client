@@ -1,23 +1,38 @@
 const express = require('express')
 
+const formidable = require('formidable');
 const app = express()
 app.use(express.json())
+
 app.listen(3008)
 // respond with "hello world" when a GET request is made to the homepage
-app.get('/', function (req, res) {
-    res.json({code:200,method:res.method,data:"get_test",search:req.query["id"]})
+app.get('/test', function (req, res) {
+    res.json({code: 200, method: req.method, data: "get_test", search: req.query["id"]})
 })
-app.post('/', function (req, res) {
-    res.json({code:200,method:res.method,data:"post_test",search:req.query["id"],params:req.body})
-})
-app.all('/secret', function (req, res, next) {
-    console.log('Accessing the secret section ...')
-    next() // pass control to the next handler
-})
-app.get('/', function (req, res) {
-    res.send('root')
-})
-app.get('/about', function (req, res) {
-    res.send('about')
+app.post('/test', function (req, res) {
+    res.json({code: 200, method: req.method, data: "post_test", search: req.query["id"], params: req.body})
 })
 
+
+app.put('/test', function (req, res) {
+    res.json({code: 200, method: req.method, data: "put_test", search: req.query["id"], params: req.body})
+})
+app.patch('/test', function (req, res) {
+    res.json({code: 200, method: req.method, data: "patch_test", search: req.query["id"], params: req.body})
+})
+
+
+app.delete('/test', function (req, res) {
+    res.json({code: 200, method: req.method, data: "delete_test", search: req.query["id"]})
+})
+app.post('/upload', function (req, res,next) {
+    const form = formidable({multiples: true});
+
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.json({fields, files});
+    });
+})

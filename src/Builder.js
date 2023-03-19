@@ -7,7 +7,7 @@ const mineTypes = require("mime-types");
 class Builder {
     _base_options = {baseUrl: ""}
     _method = "get"
-    _url = ""
+    _url
     _data = {}
     _options = {
         multipart: false,
@@ -23,17 +23,27 @@ class Builder {
     constructor(method, url, options) {
         this._method = method
         this._base_options = Object.assign(this._base_options, options)
-        this._url = new URL(this._url, this._base_options.baseUrl)
+        this._url = new URL(url, this._base_options.baseUrl)
     }
 
     /**
-     * @param data
+     * @param queryData {{}}
      * @return {Builder}
      */
-    searchParams(data) {
-        Object.keys(data).forEach(key => {
-            this._url.searchParams.set(key, data[key])
+    searchParams(queryData) {
+        Object.keys(queryData).forEach(key => {
+            this._url.searchParams.set(key, queryData[key])
         })
+        return this
+    }
+
+    /**
+     *
+     * @param queryData {{}}
+     * @return {Builder}
+     */
+    query(queryData) {
+        this.searchParams(queryData)
         return this
     }
 
@@ -71,39 +81,65 @@ class Builder {
     }
 
     /**
-     * upload file
-     * @param filename
+     * upload file/files
+     * @param key {string|{}}
+     * @param filename? {string}
      * @return {Builder}
      */
-    file(filename) {
-        if (!fs.existsSync(filename)) {
-            throw new Error("not found file by :" + filename)
+    file(key, filename = "") {
+        let uploads = {}
+        if (typeof key === "string") {
+            uploads[key] = filename
+        } else {
+            uploads = {...key}
         }
-        this.setMultipart()
-        this._data = Object.assign(...this._data, ...{
-            filename: filename,
-            content_type: mineTypes.lookup(filename)
+        let files = {}
+        Object.keys(uploads).forEach(key => {
+            filename = uploads[key]
+            if (!fs.existsSync(filename)) {
+                throw new Error("not found file by :" + filename)
+            }
+            this.setMultipart()
+
+            files[key] = {
+                filename: filename,
+                content_type: mineTypes.lookup(filename)
+            }
         })
+        this._data = Object.assign(this._data, files)
         return this
     }
 
     /**
      * upload buffer file
-     * @param filename
+     * @param key {string|{}}
+     * @param filename? {string}
      * @return {Builder}
      */
-    bufferFile(filename) {
-        if (!fs.existsSync(filename)) {
-            throw new Error("not found file by :" + filename)
+    bufferFile(key, filename = "") {
+        let uploads = {}
+        if (typeof key === "string") {
+            uploads[key] = filename
+        } else {
+            uploads = {...key}
         }
-        this.setMultipart()
+        let files = {}
+        Object.keys(uploads).forEach(key => {
+            filename = uploads[key]
+            if (!fs.existsSync(filename)) {
+                throw new Error("not found file by :" + filename)
+            }
+            this.setMultipart()
 
-        this._data = Object.assign(this._data, {
-            buffer: fs.readFileSync(filename),
-            filename: path.parse(filename).name,
-            content_type: mineTypes.lookup(filename)
+            files[key] = {
+                buffer: fs.readFileSync(filename),
+                filename: path.parse(filename).name,
+                content_type: mineTypes.lookup(filename)
+            }
         })
+        this._data = Object.assign(this._data, files)
         return this
+
     }
 
     /**
@@ -133,7 +169,7 @@ class Builder {
 
     /**
      *
-     * @return { Promise<T>}
+     * @return { Promise<*>}
      */
     async send() {
         try {
@@ -162,7 +198,7 @@ class Builder {
      *     scheduling: 'lifo',
      *     proxy: 'https://localhost:8080'
      *   }))
-     * @param agent {Agent|*}
+     * @param agent {*}
      */
     setAgent(agent) {
         this._options.agent = agent
@@ -226,7 +262,7 @@ class Builder {
 
     /**
      *
-     * @param type {string:'auto'|'basic'|'digest'}
+     * @param type {'auto'|'basic'|'digest'}
      * @return {Builder}
      */
     setAuth(type = 'basic') {

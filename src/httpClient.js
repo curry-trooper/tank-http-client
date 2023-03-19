@@ -61,8 +61,8 @@ class HttpClient {
      * @param url
      * @return {Builder}
      */
-    fetch(url) {
-        return this._createBuilder("fetch", url)
+    patch(url) {
+        return this._createBuilder("patch", url)
     }
 
     /**
