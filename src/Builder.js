@@ -147,10 +147,10 @@ class Builder {
      * @param key {string|{}}
      * @param value? {string}
      */
-    header(key, value) {
+    header(key, value="") {
         if (this._isJSON(key)) {
             Object.keys(key).forEach(k => {
-                this._headers[k] = key[value]
+                this._headers[k] = key[k]
             })
 
         } else {
@@ -173,7 +173,7 @@ class Builder {
      */
     async send() {
         try {
-            const res = await needle(this._method, this._url.toString(), this._data, Object.assign({headers: this._headers}, this._options));
+            const res = await needle(this._method, this._url.toString(), this._data, Object.assign( this._options,{headers: this._headers}));
             return new Promise((resolve, reject) => {
                 resolve(res.body)
             })

@@ -1,6 +1,6 @@
 {
   "name": "tank-http-client.js",
-  "version": "1.0.01",
+  "version": "1.0.02",
   "description": "* tank-http-client.js a needle-based http client\r * Only supports node environment\r * Support chaining call",
   "main": "src/httpClient.js",
   "scripts": {

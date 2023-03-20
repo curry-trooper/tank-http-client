@@ -2,10 +2,10 @@ const thc = require("../src/httpClient")
 const path = require("path");
 thc.setBaseUrl("http://localhost:3008")
 
-test('httpClient get', (done) => {
+test('httpClient get and header', (done) => {
     //function query == function searchParams
-    thc.get("/test").query({id: 1}).send().then((res) => {
-        expect(res).toStrictEqual({code: 200, method: 'GET', data: 'get_test', search: '1'})
+    thc.get("/test").query({id: 1}).header({token: "token_8899"}).header("useAuth", true).send().then((res) => {
+        expect(res).toStrictEqual({code: 200, method: 'GET', data: 'get_test', search: '1',headerToken: "token_8899",useAuth:"true"})
         done()
     })
 
@@ -30,6 +30,28 @@ test('httpClient post', (done) => {
             search: '1',
             params: {first: '1', nickname: 'wind body', name: 'tank'}
         })
+        done()
+    })
+})
+test('httpClient post payload', (done) => {
+    thc.post("/test/payload").payload({first: "1th", nickname: "tank-man"}).data({
+        name: "tank",
+        nickname: "wind body"
+    }).send().then((res) => {
+        expect(res).toStrictEqual( {
+                code: 200,
+                method: 'POST',
+                data: 'post_test',
+                body: {
+                    payload: {
+                        value: '{"first":"1th","nickname":"tank-man"}',
+                        content_type: 'application/json'
+                    },
+                    name: 'tank',
+                    nickname: 'wind body'
+                }
+            }
+        )
         done()
     })
 })

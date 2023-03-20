@@ -6,6 +6,9 @@
 * [x] 只支持node环境，浏览器不可运行
 * [x] 支持链式调用
 * [x] [单元测试](./test/httpClient.test.js)
+
+![img.png](img.png)
+
 * [x] 文档
 
 ## 安装
@@ -14,14 +17,20 @@
 npm install tank-http-client.js
 ```
 
-## 基本示例
+## 导入
 
 ```javascript
 //导入
 const thc = require("tank-http-client.js")
+```
+
+## 基本示例
+
+```javascript
+
 //设置基础URL地址 
 thc.setBaseUrl("http://localhost:3008")
-
+//get 请求 链式调用
 thc.get("/test")
     .query({id: 1})
     .send()
@@ -31,6 +40,7 @@ thc.get("/test")
     console.error(err)
 });
 //输出 ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
+//await  链式调用
 async () => {
     const res = await thc.get("/test")
         .query({id: 1})
@@ -41,6 +51,28 @@ async () => {
 ```
 
 ## 更多示例
+
+### 设置 header
+
+```javascript
+
+//use header
+thc.get("/test").query({id: 1}).header({token: "token_8899"}).header("useAuth", true).send().then((res) => {
+    //res:{code: 200, method: 'GET', data: 'get_test', search: '1',headerToken: "token_8899",useAuth:"true"}
+})
+
+//expressjs 
+app.get('/test', function (req, res) {
+    res.json({
+        code: 200,
+        method: req.method,
+        data: "get_test",
+        search: req.query["id"],
+        headerToken: req.header("token"),
+        useAuth: req.header("useAuth")
+    })
+})
+```
 
 ### delete
 

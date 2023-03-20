@@ -2,10 +2,13 @@
 
 ## tank-http-client
 
-* [x] tank-http-client.js a  needle.js based http client
+* [x] tank-http-client.js a needle.js based http client
 * [x] Only supports node environment
 * [x] Support chaining call
 * [x] [unit test](./test/httpClient.test.js)
+
+![img.png](img.png)
+
 * [x] document
 
 ## install
@@ -14,14 +17,19 @@
 npm install tank-http-client.js
 ```
 
-## examples
+## import
 
 ```javascript
 //import
 const thc = require("tank-http-client.js")
+```
+
+## examples
+
+```javascript
 //set base url 
 thc.setBaseUrl("http://localhost:3008")
-
+//get
 thc.get("/test")
     .query({id: 1})
     .send()
@@ -31,6 +39,8 @@ thc.get("/test")
     console.error(err)
 });
 //output ->{code: 200, method: 'GET', data: 'get_test', search: '1'}
+
+//await premise
 async () => {
     const res = await thc.get("/test")
         .query({id: 1})
@@ -41,6 +51,28 @@ async () => {
 ```
 
 ## more examples
+
+### use header
+
+```javascript
+
+//use header
+thc.get("/test").query({id: 1}).header({token: "token_8899"}).header("useAuth", true).send().then((res) => {
+    //res:{code: 200, method: 'GET', data: 'get_test', search: '1',headerToken: "token_8899",useAuth:"true"}
+})
+
+//expressjs 
+app.get('/test', function (req, res) {
+    res.json({
+        code: 200,
+        method: req.method,
+        data: "get_test",
+        search: req.query["id"],
+        headerToken: req.header("token"),
+        useAuth: req.header("useAuth")
+    })
+})
+```
 
 ### delete
 

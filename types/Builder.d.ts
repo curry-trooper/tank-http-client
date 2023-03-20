@@ -68,7 +68,7 @@ declare class Builder {
      * @param key {string|{}}
      * @param value? {string}
      */
-    header(key: string | {}, value: any): Builder;
+    header(key: string | {}, value?: string): Builder;
     _isJSON(obj: any): boolean;
     /**
      *

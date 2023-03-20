@@ -7,7 +7,7 @@ app.use(express.json())
 app.listen(3008)
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/test', function (req, res) {
-    res.json({code: 200, method: req.method, data: "get_test", search: req.query["id"]})
+    res.json({code: 200, method: req.method, data: "get_test", search: req.query["id"],headerToken:req.header("token"),useAuth:req.header("useAuth")})
 })
 app.post('/test', function (req, res) {
     res.json({code: 200, method: req.method, data: "post_test", search: req.query["id"], params: req.body})
@@ -35,4 +35,7 @@ app.post('/upload', function (req, res,next) {
         }
         res.json({fields, files});
     });
+})
+app.post('/test/payload', function (req, res) {
+    res.json({code: 200, method: req.method, data: "post_test",body:req.body})
 })
