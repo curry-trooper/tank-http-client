@@ -23,7 +23,11 @@ class Builder {
     constructor(method, url, options) {
         this._method = method
         this._base_options = Object.assign(this._base_options, options)
-        this._url = new URL(url, this._base_options.baseUrl)
+        if (this._base_options.baseUrl) {
+            this._url = new URL(url, this._base_options.baseUrl)
+        } else {
+            this._url = new URL(url)
+        }
     }
 
     /**
@@ -147,7 +151,7 @@ class Builder {
      * @param key {string|{}}
      * @param value? {string}
      */
-    header(key, value="") {
+    header(key, value = "") {
         if (this._isJSON(key)) {
             Object.keys(key).forEach(k => {
                 this._headers[k] = key[k]
@@ -173,7 +177,7 @@ class Builder {
      */
     async send() {
         try {
-            const res = await needle(this._method, this._url.toString(), this._data, Object.assign( this._options,{headers: this._headers}));
+            const res = await needle(this._method, this._url.toString(), this._data, Object.assign(this._options, {headers: this._headers}));
             return new Promise((resolve, reject) => {
                 resolve(res.body)
             })
